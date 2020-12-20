@@ -16,7 +16,7 @@ const geoLib = require('geolib');
 
 const { API_TOKEN } = process.env;
 const PORT = process.env.PORT || 3000;
-const URL = process.env.URL || 'https://ewaste-bot.herokuapp.com/';
+const URL = process.env.URL || 'https://ewaste-bot.herokuapp.com';
 
 const bot = new Telegraf(API_TOKEN);
 
