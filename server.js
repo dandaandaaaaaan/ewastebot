@@ -84,7 +84,7 @@ function getOptions(content) {
 
 
 // Main with /start
-bot.start(ctx => ctx.reply('Hello \nCommands\n- /recycle - search through commonly recycled e-waste to find the nearest e-waste bins to accomodate them\n- /search - find the nearest e-waste bin'));
+bot.start(ctx => ctx.reply('Hello \nCommands\n- /recycle - search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them\n- /search - find the nearest e-waste bin'));
 
 // Recycle Scene
 const recycleScene = new Scene('recycle');
