@@ -1,2 +1,2 @@
-# E-Waste Telegram Bot
-GEQ 1917 Project
+# Boba-telegram
+Telegram bot to find boba shops near you
