@@ -1,0 +1,74 @@
+[
+    {
+        "name": "RENEW (REcycling Nation's Electronic Waste) Programme",
+        "description": "RENEW is a flagship e-waste recycling programme launched by StarHub on Earth Hour in 2012. As an info-communications services provider retailing electronic products, RENEW reflects StarHub’s commitment to environmental sustainability. RENEW received The Green Award at the Asia Communication Awards for two years running, in 2014 and 2015.",
+        "website": "https://www.starhub.com/about-us/corporate-sustainability/recycling-nations-electronic-waste.html",
+        "limits": {
+            "length": "470",
+            "width": "120"
+        }
+    },
+    {
+        "name": "Singtel x SingPost ReCYCLE",
+        "description" : "The Singtel x SingPost E-waste Recycling Programme, launched on World Environment Day, 5 June 2017, is a collaboration between the two leading ICT and postal companies as part of their environmental sustainability efforts.",
+        "website": "http://recycle.sg/",
+        "limits": {
+            "length": "220",
+            "width": "80"
+        }
+    },
+    {
+        "name": "Punggol Eco-Drive",
+        "description" : "Virogreen (Singapore) Pte Ltd, in conjunction with Punggol 21 Community Club Management Committee (CCMC) organises an e-waste recycling programme for Punggol North residents.",
+        "website": "https://www.nea.gov.sg/docs/default-source/default-document-library/punggol-eco-drive.pdf",
+        "limits": {
+            "length": "450",
+            "width": "150"
+        }
+    },
+    {
+        "name": "M1 E-waste Drop-Off Point Programme",
+        "description": "The M1 Drop-off Point Programme is a joint effort between M1 Limited & Virogreen (Singapore) Pte Ltd to promote responsible disposal of e-waste.",
+        "website": "https://www.nea.gov.sg/docs/default-source/default-document-library/m1-e-waste-drop-off-point-programme----bin-locations.pdf",
+        "limits": {
+            "length": "470",
+            "width": "150"
+        }
+    },
+    {
+        "name": "E-waste Recycling @ North East",
+        "description": "E-waste Recycling @ North East is a collaboration between NECDC and Virogreen (Singapore) Pte Ltd to promote responsible disposal of e-waste.",
+        "website": "https://www.nea.gov.sg/docs/default-source/our-services/waste-management/bin-locations.pdf",
+        "limits": {
+            "length": "470",
+            "width": "150"
+        }
+    },
+    {
+        "name": "Shell-Metalo E-waste Recycling Programme",
+        "description": "Shell-Metalo E-waste Recycling Programme is a collaboration between Shell Eastern Petroleum Pte Ltd and Metalo International Pte Ltd to raise awareness and to increase public convenience of e-waste recycling.",
+        "website": "https://www.nea.gov.sg/docs/default-source/default-document-library/shell-metalo-e-waste-recycling-programme.pdf",
+        "limits": {
+            "length": "550",
+            "width": "225"
+        }
+    },
+    {
+        "name": "City Square Mall E-waste Recycling Programme",
+        "description": "Go green and bring your electronic waste (or e-waste) to our L2 Customer Service Counter for recycling! These include unwanted PCs, phones, radios, kettles and so on.",
+        "website": "https://www.citysquaremall.com.sg/eco-matters/e-waste/",
+        "limits" : {
+            "length": "400",
+            "width": "350",
+            "height": "700"
+        }
+    },
+    {
+        "name": "Project Homecoming - Ink & Toner Cartridge Recycling Programme",
+        "description": "Singapore's first joint printer brand ink and toner cartridge recycling initiative is led by Canon and Epson, and supported by TES, the National Library Board (NLB) and NEA.",
+        "website": "https://www.epson.com.sg/project-homecoming",
+        "limits": {
+            "items": "Ink/Toner"
+        }
+    }
+]
