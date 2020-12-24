@@ -1,9 +1,7 @@
 /* eslint-disable linebreak-style */
 require('dotenv').config();
 const Telegraf = require('telegraf');
-
 const Extra = require('telegraf/extra');
-const Markup = require('telegraf/markup');
 const session = require('telegraf/session');
 const Stage = require('telegraf/stage');
 const Scene = require('telegraf/scenes/base');
@@ -51,8 +49,10 @@ if (process.env.DYNO) {
 
 const url = 'https://dandaandaaaaaan.github.io/ewastebot/data/data.json';
 const recycleablesUrl = 'https://dandaandaaaaaan.github.io/ewastebot/data/recycleables.json';
+const programmesUrl = 'https://dandaandaaaaaan.github.io/ewastebot/data/programmes.json'
 let data = null;
 let itemData = null;
+let programmesData = null;
 request({
   url,
   json: true,
@@ -67,6 +67,14 @@ request({
 }, (error, response, body) => {
   if (!error && response.statusCode === 200) {
     itemData = body;
+  }
+});
+request({
+  url: programmesUrl,
+  json: true,
+}, (error, response, body) => {
+  if (!error && response.statusCode === 200) {
+    programmesData = body;
   }
 });
 
@@ -92,7 +100,7 @@ const recycleScene = new Scene('recycle');
 recycleScene.enter(ctx => ctx.reply('What would you like to recycle?', Extra.markup(markup => markup
   .keyboard(
     getOptions(itemData),
-  ))));
+  ).oneTime())));
 
 recycleScene.on('message', (ctx) => {
   const selectedItem = itemData
@@ -102,10 +110,14 @@ recycleScene.on('message', (ctx) => {
     ctx.scene.leave();
     return;
   }
-  ctx.session.selectedItem = selectedItem;
-  // eslint-disable-next-line radix
-  if (parseInt(selectedItem[0].dimensions.length) >= 600 || parseInt(selectedItem[0].dimensions.width) >= 300) {
-    ctx.replyWithMarkdown(`Your item will likely be unable to fit in any of the public e-waste bins! Do consider the following options to dispose them
+  if (selectedItem.length === 0) {
+    ctx.reply('Invalid selection! Use /recycle to search again', Extra.markup(m => m.removeKeyboard()));
+    ctx.scene.leave();
+  } else {
+    ctx.session.selectedItem = selectedItem;
+    // eslint-disable-next-line radix
+    if (parseInt(selectedItem[0].dimensions.length) >= 600 || parseInt(selectedItem[0].dimensions.width) >= 300) {
+      ctx.replyWithMarkdown(`Your item will likely be unable to fit in any of the public e-waste bins! Do consider the following options to dispose them
 
 *Living in a HDB*
 Please contact your town council for details on free reomval service
@@ -128,10 +140,11 @@ SembWaste Pte Ltd
 Veolia ES Singapore Pte Ltd
 - Clementi-Bukit Merah sector: 6865 3140
     `, Extra.markup(m => m.removeKeyboard()));
-    ctx.scene.leave();
-  } else if (ctx.session.selectedItem !== null) {
-    ctx.scene.leave();
-    ctx.scene.enter('searchWithConstraints');
+      ctx.scene.leave();
+    } else if (ctx.session.selectedItem !== null) {
+      ctx.scene.leave();
+      ctx.scene.enter('searchWithConstraints');
+    }
   }
 });
 
@@ -144,7 +157,7 @@ searchWithConstraintsScene.enter(ctx => ctx.reply('Send your location.', Extra.m
   ]))));
 searchWithConstraintsScene.on('location', (ctx) => {
   const selectedItem = ctx.session.selectedItem[0];
-  if (selectedItem.dimensions.width !== 0 && selectedItem.dimensions.length !== 0) {
+  if (selectedItem.dimensions.width !== '0' && selectedItem.dimensions.length !== '0') {
     const nearestLocation = data
       .filter(bin => bin.limit.items === 'None')
       // eslint-disable-next-line radix
@@ -170,7 +183,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       ctx.scene.leave();
     }
   }
-  if (selectedItem.dimensions.width === 0 && selectedItem.dimensions.length === 0) {
+  if (selectedItem.dimensions.width === '0' && selectedItem.dimensions.length === '0') {
     const nearestLocation = data
       .filter(bin => bin.limit.items === 'Ink')
       .map(bin => Object.assign(bin, {
@@ -181,7 +194,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       }))
       .sort((a, b) => a.distance - b.distance);
     ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance} away\n
-Size Limit: ${nearestLocation[0].limit.length}mm x ${nearestLocation[0].limit.width}mm`, Extra.markup(m => m.removeKeyboard()));
+Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
   }
@@ -221,15 +234,50 @@ searchScene.on('location', (ctx) => {
   ctx.scene.leave();
 });
 
+// Programmes Scene
+const programmesScene = new Scene('programmes');
+
+programmesScene.enter(ctx => ctx.reply('Choose the programme to learn more about.', Extra.markup(markup => markup
+  .keyboard(
+    getOptions(programmesData),
+  ).oneTime())));
+programmesScene.on('message', (ctx) => {
+  const selectedProgramme = programmesData
+    .filter(programme => programme.name === ctx.update.message.text);
+  if (selectedProgramme.length === 0) {
+    ctx.reply('Invalid selection! Use /programmes to search again', Extra.markup(m => m.removeKeyboard()));
+    ctx.scene.leave();
+  } else {
+    const returnString = `*${selectedProgramme[0].name}*
+
+${selectedProgramme[0].description}
+`;
+    if (selectedProgramme[0].limits.items != null) {
+      ctx.replyWithMarkdown(`${returnString}
+Item Limits: ${selectedProgramme[0].limits.items}
+      `, Extra.markup(m => m.inlineKeyboard([m.urlButton('Website', selectedProgramme[0].website)])));
+    } else if (selectedProgramme[0].limits.height == null) {
+      ctx.replyWithMarkdown(`${returnString}
+Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('Website', selectedProgramme[0].website)])));
+    } else {
+      ctx.replyWithMarkdown(`${returnString}
+Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm x ${selectedProgramme[0].limits.height}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('Website', selectedProgramme[0].website)])));
+    }
+  }
+  ctx.scene.leave();
+})
+
 // Create scene manager
 const stage = new Stage();
 stage.command('cancel', leave());
 stage.register(searchScene);
 stage.register(recycleScene);
 stage.register(searchWithConstraintsScene);
+stage.register(programmesScene);
 
 // Scene registration
 bot.use(session());
 bot.use(stage.middleware());
 bot.command('search', ctx => ctx.scene.enter('search'));
 bot.command('recycle', ctx => ctx.scene.enter('recycle'));
+bot.command('programmes', ctx => ctx.scene.enter('programmes'));
