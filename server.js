@@ -92,7 +92,12 @@ function getOptions(content) {
 
 
 // Main with /start
-bot.start(ctx => ctx.reply('Hello \nCommands\n- /recycle - search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them\n- /search - find the nearest e-waste bin'));
+bot.start(ctx => ctx.replyWithMarkdown(`Hello, I am the e-waste bot!
+
+*Commands*
+- /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
+- /search - Find the nearest e-waste bin from you
+- /programmes - Details on various e-waste collection programmes in Singapore`));
 
 // Recycle Scene
 const recycleScene = new Scene('recycle');
@@ -255,17 +260,17 @@ ${selectedProgramme[0].description}
     if (selectedProgramme[0].limits.items != null) {
       ctx.replyWithMarkdown(`${returnString}
 Item Limits: ${selectedProgramme[0].limits.items}
-      `, Extra.markup(m => m.inlineKeyboard([m.urlButton('Website', selectedProgramme[0].website)])));
+      `, Extra.markup(m => m.inlineKeyboard([m.urlButton('More Details', selectedProgramme[0].website)])));
     } else if (selectedProgramme[0].limits.height == null) {
       ctx.replyWithMarkdown(`${returnString}
-Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('Website', selectedProgramme[0].website)])));
+Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('More Details', selectedProgramme[0].website)])));
     } else {
       ctx.replyWithMarkdown(`${returnString}
-Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm x ${selectedProgramme[0].limits.height}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('Website', selectedProgramme[0].website)])));
+Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm x ${selectedProgramme[0].limits.height}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('More Details', selectedProgramme[0].website)])));
     }
   }
   ctx.scene.leave();
-})
+});
 
 // Create scene manager
 const stage = new Stage();
