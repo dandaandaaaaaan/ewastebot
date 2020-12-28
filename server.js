@@ -120,6 +120,10 @@ recycleScene.on('message', (ctx) => {
     ctx.scene.leave();
   } else {
     ctx.session.selectedItem = selectedItem;
+    if (selectedItem.name == "Alkaline Battery") {
+      ctx.reply(`Alkaline batteries in Singapore meet limits of mercury content, and thus they can be disposed together with general waste!`, Extra.markup(m => m.removeKeyboard()));
+      ctx.scene.leave();
+    }
     // eslint-disable-next-line radix
     if (parseInt(selectedItem[0].dimensions.length) >= 600 || parseInt(selectedItem[0].dimensions.width) >= 300) {
       ctx.replyWithMarkdown(`Your item will likely be unable to fit in any of the public e-waste bins! Do consider the following options to dispose them
@@ -188,7 +192,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       ctx.scene.leave();
     }
   }
-  if (selectedItem.dimensions.width === '0' && selectedItem.dimensions.length === '0') {
+  if (selectedItem.dimensions.width === '0' && selectedItem.dimensions.length === '0' && selectedItem.name == 'Ink/Toner Cartridges') {
     const nearestLocation = data
       .filter(bin => bin.limit.items === 'Ink')
       .map(bin => Object.assign(bin, {
@@ -202,6 +206,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
+    ctx.scene.leave();
   }
 });
 
@@ -233,9 +238,8 @@ searchScene.on('location', (ctx) => {
     ctx.scene.leave();
     return;
   }
-  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`);
+  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard()));
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
-  ctx.reply('Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
   ctx.scene.leave();
 });
 
@@ -268,6 +272,7 @@ Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].li
       ctx.replyWithMarkdown(`${returnString}
 Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm x ${selectedProgramme[0].limits.height}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('More Details', selectedProgramme[0].website)])));
     }
+    ctx.replyWithPhoto({source: `./assets/${selectedProgramme[0].photo}`}, Extra.markup(m => m.removeKeyboard()));
   }
   ctx.scene.leave();
 });
