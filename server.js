@@ -120,7 +120,7 @@ recycleScene.on('message', (ctx) => {
     ctx.scene.leave();
   } else {
     ctx.session.selectedItem = selectedItem;
-    if (selectedItem.name == "Alkaline Battery") {
+    if (selectedItem[0].name == "Alkaline Battery") {
       ctx.reply(`Alkaline batteries in Singapore meet limits of mercury content, and thus they can be disposed together with general waste!`, Extra.markup(m => m.removeKeyboard()));
       ctx.scene.leave();
     }
