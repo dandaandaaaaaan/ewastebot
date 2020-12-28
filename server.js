@@ -125,7 +125,7 @@ recycleScene.on('message', (ctx) => {
       ctx.scene.leave();
     }
     // eslint-disable-next-line radix
-    if (parseInt(selectedItem[0].dimensions.length) >= 600 || parseInt(selectedItem[0].dimensions.width) >= 300) {
+    else if (parseInt(selectedItem[0].dimensions.length) >= 600 || parseInt(selectedItem[0].dimensions.width) >= 300) {
       ctx.replyWithMarkdown(`Your item will likely be unable to fit in any of the public e-waste bins! Do consider the following options to dispose them
 
 *Living in a HDB*
