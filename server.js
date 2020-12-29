@@ -17,10 +17,7 @@ const { API_TOKEN, GOOGLE_ANALYTICS } = process.env;
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://ewaste-bot.herokuapp.com';
 
-const config = {
-	telegram: { webhookReply: true }
-};
-const bot = new Telegraf(API_TOKEN, config);
+const bot = new Telegraf(API_TOKEN);
 
 if (process.env.DYNO) {
   // Running on Heroku
@@ -193,11 +190,13 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
       }))
       .sort((a, b) => a.distance - b.distance);
     if (nearestLocation.length > 0) {
+      ctx.webhookReply = false;
       ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
 Size Limit: ${nearestLocation[0].limit.length}mm x ${nearestLocation[0].limit.width}mm\nThis is just an estimate! 
 Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m => m.removeKeyboard()));
       ctx.replyWithLocation(nearestLocation[0].location.latitude,
         nearestLocation[0].location.longitude);
+      ctx.webhookReply = true;
       ctx.scene.leave();
     } else {
       ctx.reply('No bin found that can accomodate items');
@@ -284,8 +283,11 @@ function searchSceneFunc(ctx, location) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
   }
-  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard())).then(ctx.scene.leave());
+  ctx.webhookReply = false;
+  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard()));
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
+  ctx.webhookReply = true;
+  ctx.scene.leave();
 }
 
 searchScene.on('text', (ctx) => {
