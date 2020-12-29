@@ -283,8 +283,8 @@ function searchSceneFunc(ctx, location) {
   }
   ctx.webhookReply = false;
   ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard()));
-  ctx.webhookReply = true;
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
+  ctx.webhookReply = true;
   ctx.scene.leave();
 }
 
