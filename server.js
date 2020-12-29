@@ -190,11 +190,13 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
       }))
       .sort((a, b) => a.distance - b.distance);
     if (nearestLocation.length > 0) {
+      ctx.webhookReply = false;
       ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
 Size Limit: ${nearestLocation[0].limit.length}mm x ${nearestLocation[0].limit.width}mm\nThis is just an estimate! 
 Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m => m.removeKeyboard()));
       ctx.replyWithLocation(nearestLocation[0].location.latitude,
         nearestLocation[0].location.longitude);
+      ctx.webhookReply = true;
       ctx.scene.leave();
     } else {
       ctx.reply('No bin found that can accomodate items');
