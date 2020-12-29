@@ -100,7 +100,7 @@ bot.start((ctx) => {
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
 - /search - Find the nearest e-waste bin from you
 - /programmes - Details on various e-waste collection programmes in Singapore`);
-visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false});
+visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
 visitor.event('start','botstart',`${ctx.chat.id}`).send()
 });
 
@@ -111,6 +111,9 @@ recycleScene.enter((ctx) => { ctx.reply('What would you like to recycle?', Extra
   .keyboard(
     getOptions(itemData),
   ).oneTime()));
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  }
   visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
 });
 
@@ -222,7 +225,10 @@ const searchScene = new Scene('search');
 searchScene.enter((ctx) => {ctx.reply('Send your location.', Extra.markup(markup => markup.resize()
   .keyboard([
     markup.locationRequestButton('Send location'),
-  ])))
+  ])));
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  }
   visitor.event('action', 'search', `${ctx.chat.id}`).send();
 });
 
@@ -260,6 +266,9 @@ programmesScene.enter((ctx) => {
   .keyboard(
     getOptions(programmesData),
   ).oneTime()));
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  }
   visitor.event('action', 'programmes', `${ctx.chat.id}`).send();
 });
 programmesScene.on('message', (ctx) => {
