@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@analytics/google-analytics": "^0.5.2",
+    "analytics": "^0.6.4",
     "dotenv": "^8.2.0",
     "geolib": "^2.0.24",
     "request": "^2.88.0",

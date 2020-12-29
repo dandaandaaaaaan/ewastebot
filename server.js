@@ -1,5 +1,7 @@
 /* eslint-disable linebreak-style */
 require('dotenv').config();
+const analyticsLib = require('analytics').default;
+const googleAnalytics = require('@analytics/google-analytics').default;
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
 const session = require('telegraf/session');
@@ -12,11 +14,21 @@ const request = require('request');
 
 const geoLib = require('geolib');
 
-const { API_TOKEN } = process.env;
+const { API_TOKEN, GOOGLE_ANALYTICS } = process.env;
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://ewaste-bot.herokuapp.com';
 
 const bot = new Telegraf(API_TOKEN);
+
+const analytics = analyticsLib({
+  app: 'e-wastebot',
+  plugins: [
+    googleAnalytics({
+      trackingId: GOOGLE_ANALYTICS
+    })
+  ]
+})
+
 
 if (process.env.DYNO) {
   // Running on Heroku
@@ -92,12 +104,15 @@ function getOptions(content) {
 
 
 // Main with /start
-bot.start(ctx => ctx.replyWithMarkdown(`Hello, I am the e-waste bot!
+bot.start((ctx) => {
+  ctx.replyWithMarkdown(`Hello, I am the e-waste bot!
 
 *Commands*
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
 - /search - Find the nearest e-waste bin from you
-- /programmes - Details on various e-waste collection programmes in Singapore`));
+- /programmes - Details on various e-waste collection programmes in Singapore`);
+analytics.identify(`${ctx.chat.id}`);
+});
 
 // Recycle Scene
 const recycleScene = new Scene('recycle');
