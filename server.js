@@ -1,7 +1,6 @@
 /* eslint-disable linebreak-style */
 require('dotenv').config();
-const analyticsLib = require('analytics').default;
-const googleAnalytics = require('@analytics/google-analytics').default;
+var ua = require('universal-analytics');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
 const session = require('telegraf/session');
@@ -19,16 +18,6 @@ const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://ewaste-bot.herokuapp.com';
 
 const bot = new Telegraf(API_TOKEN);
-
-const analytics = analyticsLib({
-  app: 'e-wastebot',
-  plugins: [
-    googleAnalytics({
-      trackingId: GOOGLE_ANALYTICS
-    })
-  ]
-})
-
 
 if (process.env.DYNO) {
   // Running on Heroku
@@ -102,7 +91,7 @@ function getOptions(content) {
   return names;
 }
 
-
+var visitor = null;
 // Main with /start
 bot.start((ctx) => {
   ctx.replyWithMarkdown(`Hello, I am the e-waste bot!
@@ -111,16 +100,19 @@ bot.start((ctx) => {
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
 - /search - Find the nearest e-waste bin from you
 - /programmes - Details on various e-waste collection programmes in Singapore`);
-analytics.identify(`${ctx.chat.id}`);
+visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false});
+visitor.event('start','botstart',`${ctx.chat.id}`).send()
 });
 
 // Recycle Scene
 const recycleScene = new Scene('recycle');
 
-recycleScene.enter(ctx => ctx.reply('What would you like to recycle?', Extra.markup(markup => markup
+recycleScene.enter((ctx) => { ctx.reply('What would you like to recycle?', Extra.markup(markup => markup
   .keyboard(
     getOptions(itemData),
-  ).oneTime())));
+  ).oneTime()));
+  visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
+});
 
 recycleScene.on('message', (ctx) => {
   const selectedItem = itemData
@@ -227,10 +219,12 @@ Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()
 
 // Search Scene
 const searchScene = new Scene('search');
-searchScene.enter(ctx => ctx.reply('Send your location.', Extra.markup(markup => markup.resize()
+searchScene.enter((ctx) => {ctx.reply('Send your location.', Extra.markup(markup => markup.resize()
   .keyboard([
     markup.locationRequestButton('Send location'),
-  ]))));
+  ])))
+  visitor.event('action', 'search', `${ctx.chat.id}`).send();
+});
 
 searchScene.on('location', (ctx) => {
   if (data === null) {
@@ -261,10 +255,13 @@ searchScene.on('location', (ctx) => {
 // Programmes Scene
 const programmesScene = new Scene('programmes');
 
-programmesScene.enter(ctx => ctx.reply('Choose the programme to learn more about.', Extra.markup(markup => markup
+programmesScene.enter((ctx) => {
+  ctx.reply('Choose the programme to learn more about.', Extra.markup(markup => markup
   .keyboard(
     getOptions(programmesData),
-  ).oneTime())));
+  ).oneTime()));
+  visitor.event('action', 'programmes', `${ctx.chat.id}`).send();
+});
 programmesScene.on('message', (ctx) => {
   const selectedProgramme = programmesData
     .filter(programme => programme.name === ctx.update.message.text);
