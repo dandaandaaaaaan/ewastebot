@@ -123,7 +123,6 @@ recycleScene.on('message', (ctx) => {
   if (data === null) {
     ctx.reply('No data, check server');
     ctx.scene.leave();
-    return;
   }
   if (selectedItem.length === 0) {
     ctx.reply('Invalid selection! Use /recycle to search again', Extra.markup(m => m.removeKeyboard()));
@@ -170,12 +169,12 @@ Veolia ES Singapore Pte Ltd
 // Search for bin with constraints scene
 const searchWithConstraintsScene = new Scene('searchWithConstraints');
 
-searchWithConstraintsScene.enter(ctx => ctx.reply('Send your location.', Extra.markup(markup => markup.resize()
+searchWithConstraintsScene.enter(ctx => ctx.reply('Send your location or enter your postal code.', Extra.markup(markup => markup.resize()
   .keyboard([
     markup.locationRequestButton('Send location'),
   ]))));
-searchWithConstraintsScene.on('location', (ctx) => {
-  const selectedItem = ctx.session.selectedItem[0];
+
+function searchWithConstraintsFunc(ctx, selectedItem, location) {
   if (selectedItem.dimensions.width !== '0' && selectedItem.dimensions.length !== '0') {
     const nearestLocation = data
       .filter(bin => bin.limit.items === 'None')
@@ -185,7 +184,7 @@ searchWithConstraintsScene.on('location', (ctx) => {
       .filter(bin => parseInt(bin.limit.width) >= parseInt(selectedItem.dimensions.width))
       .map(bin => Object.assign(bin, {
         distance: geoLib.getDistance(
-          ctx.message.location,
+          location,
           { latitude: bin.location.latitude, longitude: bin.location.longitude },
         ),
       }))
@@ -207,7 +206,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       .filter(bin => bin.limit.items === 'Ink')
       .map(bin => Object.assign(bin, {
         distance: geoLib.getDistance(
-          ctx.message.location,
+          location,
           { latitude: bin.location.latitude, longitude: bin.location.longitude },
         ),
       }))
@@ -218,11 +217,47 @@ Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()
       nearestLocation[0].location.longitude);
     ctx.scene.leave();
   }
+}
+
+searchWithConstraintsScene.on('message', (ctx) => {
+  const selectedItem = ctx.session.selectedItem[0];
+  if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
+    const apiCall = `https://developers.onemap.sg/commonapi/search?searchVal=${ctx.message.text}&returnGeom=Y&getAddrDetails=Y`
+    request({
+      url: apiCall,
+      json: true,
+    }, (error, response, body) => {
+      if (!error && response.statusCode === 200 && body.results.length > 0) {
+        returnLocation = body;
+        searchWithConstraintsFunc(ctx, selectedItem, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
+      } else {
+        ctx.replyWithMarkdown(`Invalid postal code!
+Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
+        .keyboard([
+          markup.locationRequestButton('Send location'),
+        ]));
+      }
+    })
+  } else if (ctx.message.text.toLowerCase() === "cancel"){
+    ctx.replyWithMarkdown("Search Cancelled", Extra.markup(m => m.removeKeyboard()));
+    ctx.scene.leave();
+  } else {
+    ctx.replyWithMarkdown(`Invalid postal code!
+Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
+            .keyboard([
+              markup.locationRequestButton('Send location'),
+            ]));
+  }
+});
+
+searchWithConstraintsScene.on('location', (ctx) => {
+  const selectedItem = ctx.session.selectedItem[0];
+  searchWithConstraintsFunc(ctx, selectedItem, ctx.message.location);
 });
 
 // Search Scene
 const searchScene = new Scene('search');
-searchScene.enter((ctx) => {ctx.reply('Send your location.', Extra.markup(markup => markup.resize()
+searchScene.enter((ctx) => {ctx.reply('Send your location or enter your postal code.', Extra.markup(markup => markup.resize()
   .keyboard([
     markup.locationRequestButton('Send location'),
   ])));
@@ -232,30 +267,62 @@ searchScene.enter((ctx) => {ctx.reply('Send your location.', Extra.markup(markup
   visitor.event('action', 'search', `${ctx.chat.id}`).send();
 });
 
-searchScene.on('location', (ctx) => {
-  if (data === null) {
-    ctx.reply('No data, check server');
-    ctx.scene.leave();
-    return;
-  }
-  /** @type {Array<EWasteBin>} */
+function searchSceneFunc(ctx, location) {
   const nearestBin = data
-    .filter(bin => bin.limit.items === 'None')
-    .map(bin => Object.assign(bin, {
-      distance: geoLib.getDistance(
-        ctx.message.location,
-        { latitude: bin.location.latitude, longitude: bin.location.longitude },
-      ),
-    }))
-    .sort((a, b) => a.distance - b.distance);
+  .filter(bin => bin.limit.items === 'None')
+  .map(bin => Object.assign(bin, {
+    distance: geoLib.getDistance(
+      location,
+      { latitude: bin.location.latitude, longitude: bin.location.longitude },
+    ),
+  }))
+  .sort((a, b) => a.distance - b.distance);
   if (nearestBin.length === 0) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
-    return;
   }
   ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard()));
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
   ctx.scene.leave();
+}
+
+searchScene.on('message', (ctx) => {
+  if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
+    const apiCall = `https://developers.onemap.sg/commonapi/search?searchVal=${ctx.message.text}&returnGeom=Y&getAddrDetails=Y`
+    request({
+      url: apiCall,
+      json: true,
+    }, (error, response, body) => {
+      if (!error && response.statusCode === 200 && body.results.length > 0) {
+        returnLocation = body;
+        searchSceneFunc(ctx, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
+      } else {
+        ctx.replyWithMarkdown(`Invalid postal code!
+Re-enter postal code, send your location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
+        .keyboard([
+          markup.locationRequestButton('Send location'),
+        ]));
+      }
+    })
+  } else if (ctx.message.text.toLowerCase() === "cancel"){
+    ctx.replyWithMarkdown("Search Cancelled", Extra.markup(m => m.removeKeyboard()));
+    ctx.scene.leave();
+  } else {
+    ctx.replyWithMarkdown(`Invalid postal code!
+Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
+            .keyboard([
+              markup.locationRequestButton('Send location'),
+            ]));
+  }
+})
+
+searchScene.on('location', (ctx) => {
+  if (data === null) {
+    ctx.reply('No data, check server');
+    ctx.scene.leave();
+  }
+  /** @type {Array<EWasteBin>} */
+  searchSceneFunc(ctx, ctx.message.location)
 });
 
 // Programmes Scene
