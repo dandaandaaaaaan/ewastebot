@@ -17,10 +17,7 @@ const { API_TOKEN, GOOGLE_ANALYTICS } = process.env;
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://ewaste-bot.herokuapp.com';
 
-const config = {
-	telegram: { webhookReply: true }
-};
-const bot = new Telegraf(API_TOKEN, config);
+const bot = new Telegraf(API_TOKEN);
 
 if (process.env.DYNO) {
   // Running on Heroku
@@ -284,8 +281,11 @@ function searchSceneFunc(ctx, location) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
   }
-  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard())).then(ctx.scene.leave());
+  ctx.webhookReply = false;
+  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard()));
+  ctx.webhookReply = true;
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
+  ctx.scene.leave();
 }
 
 searchScene.on('text', (ctx) => {
