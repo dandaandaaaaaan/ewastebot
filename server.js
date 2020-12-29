@@ -219,7 +219,7 @@ Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()
   }
 }
 
-searchWithConstraintsScene.on('message', (ctx) => {
+searchWithConstraintsScene.on('text', (ctx) => {
   const selectedItem = ctx.session.selectedItem[0];
   if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
     const apiCall = `https://developers.onemap.sg/commonapi/search?searchVal=${ctx.message.text}&returnGeom=Y&getAddrDetails=Y`
@@ -286,7 +286,7 @@ function searchSceneFunc(ctx, location) {
   ctx.scene.leave();
 }
 
-searchScene.on('message', (ctx) => {
+searchScene.on('text', (ctx) => {
   if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
     const apiCall = `https://developers.onemap.sg/commonapi/search?searchVal=${ctx.message.text}&returnGeom=Y&getAddrDetails=Y`
     request({
