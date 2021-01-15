@@ -6,7 +6,8 @@
         "limits": {
             "length": "470",
             "width": "120"
-        }
+        },
+        "photo": "starhub.jpg"
     },
     {
         "name": "Singtel x SingPost ReCYCLE",
@@ -15,7 +16,8 @@
         "limits": {
             "length": "220",
             "width": "80"
-        }
+        },
+        "photo": "singtel.jpg"
     },
     {
         "name": "Punggol Eco-Drive",
@@ -24,7 +26,8 @@
         "limits": {
             "length": "450",
             "width": "150"
-        }
+        },
+        "photo": "punggol.png"
     },
     {
         "name": "M1 E-waste Drop-Off Point Programme",
@@ -33,7 +36,8 @@
         "limits": {
             "length": "470",
             "width": "150"
-        }
+        },
+        "photo": "m1.png"
     },
     {
         "name": "E-waste Recycling @ North East",
@@ -42,7 +46,8 @@
         "limits": {
             "length": "470",
             "width": "150"
-        }
+        },
+        "photo": "punggol.png"
     },
     {
         "name": "Shell-Metalo E-waste Recycling Programme",
@@ -51,7 +56,8 @@
         "limits": {
             "length": "550",
             "width": "225"
-        }
+        },
+        "photo": "shell.jpg"
     },
     {
         "name": "City Square Mall E-waste Recycling Programme",
@@ -61,7 +67,8 @@
             "length": "400",
             "width": "350",
             "height": "700"
-        }
+        },
+        "photo": "citysquare.jpg"
     },
     {
         "name": "Project Homecoming - Ink & Toner Cartridge Recycling Programme",
@@ -69,6 +76,7 @@
         "website": "https://www.epson.com.sg/project-homecoming",
         "limits": {
             "items": "Ink/Toner"
-        }
+        },
+        "photo": "projecthomecoming.jpg"
     }
 ]
