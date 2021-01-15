@@ -1,6 +1,6 @@
 /* eslint-disable linebreak-style */
 require('dotenv').config();
-var ua = require('universal-analytics');
+const ua = require('universal-analytics');
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
 const session = require('telegraf/session');
@@ -398,9 +398,10 @@ faqScene.enter((ctx) => {
   visitor.event('action', 'faq', `${ctx.chat.id}`).send();
 });
 
+
 faqScene.on('text', (ctx) => {
   const selectedQn = faqData
-    .filter(qn => qn.question === ctx.update.message.text);
+    .filter(qn => qn.name === ctx.update.message.text);
   if (selectedQn.length === 0) {
     ctx.reply('Invalid selection! Use /faq to search through frequently asked questions again', Extra.markup(m => m.removeKeyboard()));
   } else {
