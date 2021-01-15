@@ -110,7 +110,7 @@ bot.start((ctx) => {
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
 - /search - Find the nearest e-waste bin from you
 - /programmes - Details on various e-waste collection programmes in Singapore`);
-  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, {strictCidFormat: false, cookie_domain: 'auto'});
   visitor.event('start','botstart',`${ctx.chat.id}`).send()
 });
 
@@ -122,7 +122,7 @@ recycleScene.enter((ctx) => { ctx.reply('What would you like to recycle?', Extra
     getOptions(itemData),
   ).oneTime()));
 if (visitor == null) {
-  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, {strictCidFormat: false, cookie_domain: 'auto'});
 }
 visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
 });
@@ -139,7 +139,7 @@ recycleScene.on('message', (ctx) => {
     ctx.scene.leave();
   } else {
     ctx.session.selectedItem = selectedItem;
-    if (selectedItem[0].name == 'Alkaline Battery') {
+    if (selectedItem[0].name === 'Alkaline Battery') {
       ctx.reply('Alkaline batteries in Singapore meet limits of mercury content, and thus they can be disposed together with general waste!', Extra.markup(m => m.removeKeyboard()));
       ctx.scene.leave();
     }
@@ -199,6 +199,7 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
+    visitor.event('map', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' });
     if (nearestLocation.length > 0) {
       ctx.webhookReply = false;
       ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
@@ -223,6 +224,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
+    visitor.event('map', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' });
     ctx.webhookReply = false;
     ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
@@ -272,14 +274,15 @@ searchWithConstraintsScene.on('location', (ctx) => {
 
 // Search Scene
 const searchScene = new Scene('search');
-searchScene.enter((ctx) => {ctx.reply('Send your location or enter your postal code.', Extra.markup(markup => markup.resize()
-  .keyboard([
-    markup.locationRequestButton('Send location'),
-  ])));
-if (visitor == null) {
-  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
-}
-visitor.event('action', 'search', `${ctx.chat.id}`).send();
+searchScene.enter((ctx) => {
+  ctx.reply('Send your location or enter your postal code.', Extra.markup(markup => markup.resize()
+    .keyboard([
+      markup.locationRequestButton('Send location'),
+    ])));
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
+  }
+  visitor.event('action', 'search', `${ctx.chat.id}`).send();
 });
 
 function searchSceneFunc(ctx, location) {
@@ -292,6 +295,7 @@ function searchSceneFunc(ctx, location) {
       ),
     }))
     .sort((a, b) => a.distance - b.distance);
+  visitor.event('map', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' });
   if (nearestBin.length === 0) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
@@ -352,7 +356,7 @@ programmesScene.enter((ctx) => {
       getOptions(programmesData),
     ).oneTime()));
   if (visitor == null) {
-    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, {strictCidFormat: false, cookie_domain: 'auto'});
   }
   visitor.event('action', 'programmes', `${ctx.chat.id}`).send();
 });
@@ -378,7 +382,7 @@ Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].li
       ctx.replyWithMarkdown(`${returnString}
 Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].limits.width}mm x ${selectedProgramme[0].limits.height}mm`, Extra.markup(m => m.inlineKeyboard([m.urlButton('More Details', selectedProgramme[0].website)])));
     }
-    ctx.replyWithPhoto({source: `./assets/${selectedProgramme[0].photo}`}, Extra.markup(m => m.removeKeyboard()));
+    ctx.replyWithPhoto({ source: `./assets/${selectedProgramme[0].photo}` }, Extra.markup(m => m.removeKeyboard()));
   }
   ctx.scene.leave();
 });
@@ -393,7 +397,7 @@ faqScene.enter((ctx) => {
       getOptions(faqData),
     )));
   if (visitor == null) {
-    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
   }
   visitor.event('action', 'faq', `${ctx.chat.id}`).send();
 });
