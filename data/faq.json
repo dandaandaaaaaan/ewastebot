@@ -5,7 +5,7 @@
     },
     {
         "name": "Is there any personal data that is being tracked upon using of this bot?",
-        "reply": "For the sake of data analysis for the project, we are monitoring the total number of unique users for the bot as well as the locations that are sent to the bot. None of the locations are tied to your user information, and the only user info that is being tracked is your hidden Telegram user ID, which does not contain any of your personal information. The code for the bot is also fully open source, and can be found on https://github.com/dandaandaaaaaan/ewastebot"
+        "reply": "For the sake of data analysis for after the project, we are monitoring the total number of unique users for the bot as well as the locations that are sent to the bot. None of the locations are tied to your user information, and the only user info that is being tracked is the Telegram Chat ID to determine unique users, which does not contain any of your personal information. \n\nThe code for the bot is also fully open source, and can be found on https://github.com/dandaandaaaaaan/ewastebot"
     },
     {
         "name": "Upon using the various e-waste bins, will the data in my e-waste be protected?",
