@@ -51,9 +51,11 @@ if (process.env.DYNO) {
 const url = 'https://dandaandaaaaaan.github.io/ewastebot/data/data.json';
 const recycleablesUrl = 'https://dandaandaaaaaan.github.io/ewastebot/data/recycleables.json';
 const programmesUrl = 'https://dandaandaaaaaan.github.io/ewastebot/data/programmes.json'
+const faqUrl = 'https://dandaandaaaaaan.github.io/ewastebot/data/faq.json';
 let data = null;
 let itemData = null;
 let programmesData = null;
+let faqData = null;
 request({
   url,
   json: true,
@@ -78,6 +80,14 @@ request({
     programmesData = body;
   }
 });
+request({
+  url: faqUrl,
+  json: true,
+}, (error, response, body) => {
+  if (!error && response.statusCode === 200) {
+    faqData = body;
+  }
+})
 
 // Functions
 function getOptions(content) {
@@ -91,7 +101,7 @@ function getOptions(content) {
   return names;
 }
 
-var visitor = null;
+let visitor = null;
 // Main with /start
 bot.start((ctx) => {
   ctx.replyWithMarkdown(`Hello, I am the e-waste bot!
@@ -100,8 +110,8 @@ bot.start((ctx) => {
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
 - /search - Find the nearest e-waste bin from you
 - /programmes - Details on various e-waste collection programmes in Singapore`);
-visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
-visitor.event('start','botstart',`${ctx.chat.id}`).send()
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  visitor.event('start','botstart',`${ctx.chat.id}`).send()
 });
 
 // Recycle Scene
@@ -111,10 +121,10 @@ recycleScene.enter((ctx) => { ctx.reply('What would you like to recycle?', Extra
   .keyboard(
     getOptions(itemData),
   ).oneTime()));
-  if (visitor == null) {
-    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
-  }
-  visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
+if (visitor == null) {
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+}
+visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
 });
 
 recycleScene.on('message', (ctx) => {
@@ -129,8 +139,8 @@ recycleScene.on('message', (ctx) => {
     ctx.scene.leave();
   } else {
     ctx.session.selectedItem = selectedItem;
-    if (selectedItem[0].name == "Alkaline Battery") {
-      ctx.reply(`Alkaline batteries in Singapore meet limits of mercury content, and thus they can be disposed together with general waste!`, Extra.markup(m => m.removeKeyboard()));
+    if (selectedItem[0].name == 'Alkaline Battery') {
+      ctx.reply('Alkaline batteries in Singapore meet limits of mercury content, and thus they can be disposed together with general waste!', Extra.markup(m => m.removeKeyboard()));
       ctx.scene.leave();
     }
     // eslint-disable-next-line radix
@@ -138,7 +148,7 @@ recycleScene.on('message', (ctx) => {
       ctx.replyWithMarkdown(`Your item will likely be unable to fit in any of the public e-waste bins! Do consider the following options to dispose them
 
 *Living in a HDB*
-Please contact your town council for details on free reomval service
+Please contact your town council for details on free removal service
 
 *Living in a Condominium*
 Please contact your condominium management on details for removal services
@@ -214,7 +224,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       }))
       .sort((a, b) => a.distance - b.distance);
     ctx.webhookReply = false;
-    ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance} away\n
+    ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
@@ -227,6 +237,7 @@ searchWithConstraintsScene.on('text', (ctx) => {
   const selectedItem = ctx.session.selectedItem[0];
   if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
     const apiCall = `https://developers.onemap.sg/commonapi/search?searchVal=${ctx.message.text}&returnGeom=Y&getAddrDetails=Y`
+    let returnLocation = null;
     request({
       url: apiCall,
       json: true,
@@ -237,20 +248,20 @@ searchWithConstraintsScene.on('text', (ctx) => {
       } else {
         ctx.replyWithMarkdown(`Invalid postal code!
 Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
-        .keyboard([
-          markup.locationRequestButton('Send location'),
-        ]));
+          .keyboard([
+            markup.locationRequestButton('Send location'),
+          ]));
       }
     })
-  } else if (ctx.message.text.toLowerCase() === "cancel"){
-    ctx.replyWithMarkdown("Search Cancelled", Extra.markup(m => m.removeKeyboard()));
+  } else if (ctx.message.text.toLowerCase() === 'cancel') {
+    ctx.replyWithMarkdown('Search Cancelled', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
   } else {
     ctx.replyWithMarkdown(`Invalid postal code!
 Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
-            .keyboard([
-              markup.locationRequestButton('Send location'),
-            ]));
+      .keyboard([
+        markup.locationRequestButton('Send location'),
+      ]));
   }
 });
 
@@ -265,22 +276,22 @@ searchScene.enter((ctx) => {ctx.reply('Send your location or enter your postal c
   .keyboard([
     markup.locationRequestButton('Send location'),
   ])));
-  if (visitor == null) {
-    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
-  }
-  visitor.event('action', 'search', `${ctx.chat.id}`).send();
+if (visitor == null) {
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+}
+visitor.event('action', 'search', `${ctx.chat.id}`).send();
 });
 
 function searchSceneFunc(ctx, location) {
   const nearestBin = data
-  .filter(bin => bin.limit.items === 'None')
-  .map(bin => Object.assign(bin, {
-    distance: geoLib.getDistance(
-      location,
-      { latitude: bin.location.latitude, longitude: bin.location.longitude },
-    ),
-  }))
-  .sort((a, b) => a.distance - b.distance);
+    .filter(bin => bin.limit.items === 'None')
+    .map(bin => Object.assign(bin, {
+      distance: geoLib.getDistance(
+        location,
+        { latitude: bin.location.latitude, longitude: bin.location.longitude },
+      ),
+    }))
+    .sort((a, b) => a.distance - b.distance);
   if (nearestBin.length === 0) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
@@ -295,6 +306,7 @@ function searchSceneFunc(ctx, location) {
 searchScene.on('text', (ctx) => {
   if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
     const apiCall = `https://developers.onemap.sg/commonapi/search?searchVal=${ctx.message.text}&returnGeom=Y&getAddrDetails=Y`
+    let returnLocation = null;
     request({
       url: apiCall,
       json: true,
@@ -305,20 +317,20 @@ searchScene.on('text', (ctx) => {
       } else {
         ctx.replyWithMarkdown(`Invalid postal code!
 Re-enter postal code, send your location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
-        .keyboard([
-          markup.locationRequestButton('Send location'),
-        ]));
+          .keyboard([
+            markup.locationRequestButton('Send location'),
+          ]));
       }
     })
-  } else if (ctx.message.text.toLowerCase() === "cancel"){
-    ctx.replyWithMarkdown("Search Cancelled", Extra.markup(m => m.removeKeyboard()));
+  } else if (ctx.message.text.toLowerCase() === 'cancel') {
+    ctx.replyWithMarkdown('Search Cancelled', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
   } else {
     ctx.replyWithMarkdown(`Invalid postal code!
 Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
-            .keyboard([
-              markup.locationRequestButton('Send location'),
-            ]));
+      .keyboard([
+        markup.locationRequestButton('Send location'),
+      ]));
   }
 })
 
@@ -336,19 +348,19 @@ const programmesScene = new Scene('programmes');
 
 programmesScene.enter((ctx) => {
   ctx.reply('Choose the programme to learn more about.', Extra.markup(markup => markup
-  .keyboard(
-    getOptions(programmesData),
-  ).oneTime()));
+    .keyboard(
+      getOptions(programmesData),
+    ).oneTime()));
   if (visitor == null) {
     visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
   }
   visitor.event('action', 'programmes', `${ctx.chat.id}`).send();
 });
-programmesScene.on('message', (ctx) => {
+programmesScene.on('text', (ctx) => {
   const selectedProgramme = programmesData
     .filter(programme => programme.name === ctx.update.message.text);
   if (selectedProgramme.length === 0) {
-    ctx.reply('Invalid selection! Use /programmes to search again', Extra.markup(m => m.removeKeyboard()));
+    ctx.reply('Invalid selection! Use /programmes to search through programmes again', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
   } else {
     const returnString = `*${selectedProgramme[0].name}*
@@ -371,6 +383,33 @@ Size Limits: ${selectedProgramme[0].limits.length}mm x ${selectedProgramme[0].li
   ctx.scene.leave();
 });
 
+// FAQ Scene
+
+const faqScene = new Scene('faq');
+
+faqScene.enter((ctx) => {
+  ctx.reply('Select your question', Extra.markup(markup => markup
+    .keyboard(
+      getOptions(faqData),
+    )));
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`,  {strictCidFormat: false, cookie_domain: 'auto'});
+  }
+  visitor.event('action', 'faq', `${ctx.chat.id}`).send();
+});
+
+faqScene.on('text', (ctx) => {
+  const selectedQn = faqData
+    .filter(qn => qn.question === ctx.update.message.text);
+  if (selectedQn.length === 0) {
+    ctx.reply('Invalid selection! Use /faq to search through frequently asked questions again', Extra.markup(m => m.removeKeyboard()));
+  } else {
+    ctx.replyWithMarkdown(`${selectedQn[0].reply}`, Extra.markup(m => m.removeKeyboard()));
+  }
+  ctx.scene.leave();
+});
+
+
 // Create scene manager
 const stage = new Stage();
 stage.command('cancel', leave());
@@ -378,6 +417,7 @@ stage.register(searchScene);
 stage.register(recycleScene);
 stage.register(searchWithConstraintsScene);
 stage.register(programmesScene);
+stage.register(faqScene);
 
 // Scene registration
 bot.use(session());
@@ -385,3 +425,4 @@ bot.use(stage.middleware());
 bot.command('search', ctx => ctx.scene.enter('search'));
 bot.command('recycle', ctx => ctx.scene.enter('recycle'));
 bot.command('programmes', ctx => ctx.scene.enter('programmes'));
+bot.command('faq', ctx => ctx.scene.enter('faq'));
