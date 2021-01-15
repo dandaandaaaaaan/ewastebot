@@ -110,8 +110,8 @@ bot.start((ctx) => {
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
 - /search - Find the nearest e-waste bin from you
 - /programmes - Details on various e-waste collection programmes in Singapore`);
-  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, {strictCidFormat: false, cookie_domain: 'auto'});
-  visitor.event('start','botstart',`${ctx.chat.id}`).send()
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
+  visitor.event('start','botstart',`${ctx.chat.id}`).send();
 });
 
 // Recycle Scene
@@ -122,7 +122,7 @@ recycleScene.enter((ctx) => { ctx.reply('What would you like to recycle?', Extra
     getOptions(itemData),
   ).oneTime()));
 if (visitor == null) {
-  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, {strictCidFormat: false, cookie_domain: 'auto'});
+  visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
 }
 visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
 });
@@ -199,7 +199,7 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
-    visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' });
+    visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' }).send();
     if (nearestLocation.length > 0) {
       ctx.webhookReply = false;
       ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
@@ -224,7 +224,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
-    visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' });
+    visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' }).send();
     ctx.webhookReply = false;
     ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
@@ -295,7 +295,7 @@ function searchSceneFunc(ctx, location) {
       ),
     }))
     .sort((a, b) => a.distance - b.distance);
-  visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' });
+  visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' }).send();
   if (nearestBin.length === 0) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
@@ -356,7 +356,7 @@ programmesScene.enter((ctx) => {
       getOptions(programmesData),
     ).oneTime()));
   if (visitor == null) {
-    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, {strictCidFormat: false, cookie_domain: 'auto'});
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
   }
   visitor.event('action', 'programmes', `${ctx.chat.id}`).send();
 });
