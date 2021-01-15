@@ -213,10 +213,12 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
+    ctx.webhookReply = false;
     ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance} away\n
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
+    ctx.webhookReply = true;
     ctx.scene.leave();
   }
 }
