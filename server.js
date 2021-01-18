@@ -199,7 +199,7 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
-    visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' }).send();
+    visitor.event('map', 'location', `${location.latitude},${location.longitude}`).send();
     if (nearestLocation.length > 0) {
       ctx.webhookReply = false;
       ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
@@ -224,7 +224,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
         ),
       }))
       .sort((a, b) => a.distance - b.distance);
-    visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' }).send();
+    visitor.event('map', 'location', `${location.latitude},${location.longitude}`).send();
     ctx.webhookReply = false;
     ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
@@ -295,7 +295,7 @@ function searchSceneFunc(ctx, location) {
       ),
     }))
     .sort((a, b) => a.distance - b.distance);
-  visitor.event('map', 'location', `${location.latitude},${location.longitude}`, { strictCidFormat: false, cookie_domain: 'auto' }).send();
+  visitor.event('map', 'location', `${location.latitude},${location.longitude}`).send();
   if (nearestBin.length === 0) {
     ctx.reply('No data. Enter /search to search for another bin', Extra.markup(m => m.removeKeyboard()));
     ctx.scene.leave();
