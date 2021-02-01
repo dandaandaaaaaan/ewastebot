@@ -104,12 +104,16 @@ function getOptions(content) {
 let visitor = null;
 // Main with /start
 bot.start((ctx) => {
-  ctx.replyWithMarkdown(`Hello, I am the e-waste bot!
+  ctx.replyWithMarkdown(`Hello, I am the Singapore e-waste bot!
 
 *Commands*
 - /recycle - Search through commonly recycled e-waste to find the nearest e-waste bins to accommodate them
+
 - /search - Find the nearest e-waste bin from you
-- /programmes - Details on various e-waste collection programmes in Singapore`);
+
+- /programmes - Details on various e-waste collection programmes in Singapore
+
+- /faq - Frequently Asked Questions on e-waste recycling and this bot`);
   visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
   visitor.event('start','botstart',`${ctx.chat.id}`).send();
 });
@@ -202,8 +206,12 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
     visitor.event('map', 'location', `${location.latitude},${location.longitude}`).send();
     if (nearestLocation.length > 0) {
       ctx.webhookReply = false;
-      ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
-Size Limit: ${nearestLocation[0].limit.length}mm x ${nearestLocation[0].limit.width}mm\nThis is just an estimate! 
+      ctx.replyWithMarkdown(`*Nearest Bin*
+${nearestLocation[0].title}
+${nearestLocation[0].address}
+${nearestLocation[0].distance}m away
+Size Limit: ${nearestLocation[0].limit.length}mm x ${nearestLocation[0].limit.width}mm
+This is just an estimate! 
 Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m => m.removeKeyboard()));
       ctx.replyWithLocation(nearestLocation[0].location.latitude,
         nearestLocation[0].location.longitude);
@@ -226,7 +234,11 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       .sort((a, b) => a.distance - b.distance);
     visitor.event('map', 'location', `${location.latitude},${location.longitude}`).send();
     ctx.webhookReply = false;
-    ctx.reply(`Nearest Bin\n${nearestLocation[0].title}\n${nearestLocation[0].address}\n${nearestLocation[0].distance}m away\n
+    ctx.replyWithMarkdown(`
+*Nearest Bin*
+${nearestLocation[0].title}
+${nearestLocation[0].address}
+${nearestLocation[0].distance}m away
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
@@ -301,7 +313,11 @@ function searchSceneFunc(ctx, location) {
     ctx.scene.leave();
   }
   ctx.webhookReply = false;
-  ctx.reply(`Nearest Bin\n${nearestBin[0].title}\n${nearestBin[0].address}\n${nearestBin[0].distance}m`, Extra.markup(m => m.removeKeyboard()));
+  ctx.replyWithMarkdown(`*Nearest Bin*
+${nearestBin[0].title}
+${nearestBin[0].address}
+${nearestBin[0].distance}m away
+Size Limit: ${nearestBin[0].limit.length}mm x ${nearestBin[0].limit.width}mm`, Extra.markup(m => m.removeKeyboard()));
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
   ctx.webhookReply = true;
   ctx.scene.leave();
