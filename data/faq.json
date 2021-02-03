@@ -14,5 +14,9 @@
     {
         "name": "What should I prepare before recycling my e-waste?",
         "reply": "In order to reduce the risk of short circuit or creation of fire hazards, do tape the ends of wires or rechargeable batteries before recycling!"
+    },
+    {
+        "name": "Where can I send feedback or report technical issues?",
+        "reply": "If you have any feedback for our project or wish to report any bugs, send an email to e0544308@u.nus.edu and we will be in touch!"
     }
 ]
