@@ -1,0 +1,18 @@
+[
+    {
+        "name": "What is the purpose of this bot?",
+        "reply": "This bot was created as part of a project for the NUS Module, GEQ1917: Understanding and Critquing Sustainability. We hope to further promote and enhance e-waste recycling in Singapore"
+    },
+    {
+        "name": "Is there any personal data that is being tracked upon using of this bot?",
+        "reply": "For the sake of data analysis for after the project, we are monitoring the total number of unique users for the bot as well as the locations that are sent to the bot. None of the locations are tied to your user information, and the only user info that is being tracked is the Telegram Chat ID to determine unique users, which does not contain any of your personal information. \n\nThe code for the bot is also fully open source, and can be found on https://github.com/dandaandaaaaaan/ewastebot"
+    },
+    {
+        "name": "Upon using the various e-waste bins, will the data in my e-waste be protected?",
+        "reply": "The individual e-waste recycling bin vendors are committed towards safe disposal of e-waste. They are only interested in the metals from the devices, not the data stored in them. For more information, use the /programmes command to learn more about the individual programmes. "
+    },
+    {
+        "name": "What should I prepare before recycling my e-waste?",
+        "reply": "In order to reduce the risk of short circuit or creation of fire hazards, do tape the ends of wires or rechargeable batteries before recycling!"
+    }
+]
