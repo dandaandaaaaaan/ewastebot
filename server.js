@@ -210,6 +210,7 @@ function searchWithConstraintsFunc(ctx, selectedItem, location) {
 ${nearestLocation[0].title}
 ${nearestLocation[0].address}
 ${nearestLocation[0].distance}m away
+
 Size Limit: ${nearestLocation[0].limit.length}mm x ${nearestLocation[0].limit.width}mm
 This is just an estimate! 
 Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m => m.removeKeyboard()));
@@ -239,6 +240,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
 ${nearestLocation[0].title}
 ${nearestLocation[0].address}
 ${nearestLocation[0].distance}m away
+
 Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()));
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
@@ -317,6 +319,7 @@ function searchSceneFunc(ctx, location) {
 ${nearestBin[0].title}
 ${nearestBin[0].address}
 ${nearestBin[0].distance}m away
+
 Size Limit: ${nearestBin[0].limit.length}mm x ${nearestBin[0].limit.width}mm`, Extra.markup(m => m.removeKeyboard()));
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
   ctx.webhookReply = true;
@@ -331,15 +334,16 @@ searchScene.on('text', (ctx) => {
       url: apiCall,
       json: true,
     }, (error, response, body) => {
+      if (body.results.length === 0) {
+        ctx.replyWithMarkdown(`Invalid postal code!
+Re-enter postal code, send your location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
+                  .keyboard([
+                    markup.locationRequestButton('Send location'),
+                  ]));
+      }
       if (!error && response.statusCode === 200 && body.results.length > 0) {
         returnLocation = body;
         searchSceneFunc(ctx, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
-      } else {
-        ctx.replyWithMarkdown(`Invalid postal code!
-Re-enter postal code, send your location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
-          .keyboard([
-            markup.locationRequestButton('Send location'),
-          ]));
       }
     })
   } else if (ctx.message.text.toLowerCase() === 'cancel') {
