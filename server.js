@@ -113,7 +113,7 @@ bot.start((ctx) => {
 
 - /programmes - Details on various e-waste collection programmes in Singapore
 
-- /faq - Frequently Asked Questions on e-waste recycling and this bot`);
+- /faq - Frequently Asked Questions on e-waste recycling and this Telegram bot, and how to contact us`);
   visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
   visitor.event('start','botstart',`${ctx.chat.id}`).send();
 });
@@ -217,6 +217,7 @@ Do ensure your recyclables can fit within the size limit shown `, Extra.markup(m
       ctx.replyWithLocation(nearestLocation[0].location.latitude,
         nearestLocation[0].location.longitude);
       ctx.webhookReply = true;
+      ctx.replyWithMarkdown('Has the information helped you to recycle e-waste?', Extra.markup(m => m.inlineKeyboard([[m.callbackButton('Yes','yes')], [m.callbackButton('No, but it will in the future.','no1')], [m.callbackButton('No','no2')]])));
       ctx.scene.leave();
     } else {
       ctx.reply('No bin found that can accomodate items');
@@ -245,6 +246,7 @@ Item Limits: Printer Ink/Toner cartridges`, Extra.markup(m => m.removeKeyboard()
     ctx.replyWithLocation(nearestLocation[0].location.latitude,
       nearestLocation[0].location.longitude);
     ctx.webhookReply = true;
+    ctx.replyWithMarkdown('Has the information helped you to recycle e-waste?', Extra.markup(m => m.inlineKeyboard([[m.callbackButton('Yes','yes')], [m.callbackButton('No, but it will in the future.','no1')], [m.callbackButton('No','no2')]])));
     ctx.scene.leave();
   }
 }
@@ -270,7 +272,7 @@ Re-enter postal code, send your location, or type "cancel" to exit`), Extra.mark
       if (!error && response.statusCode === 200 && body.results.length > 0) {
         returnLocation = body;
         ctx.webhookReply = true;
-        searchSceneFunc(ctx, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
+        searchWithConstraintsFunc(ctx, selectedItem, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
       }
     })
   } else if (ctx.message.text.toLowerCase() === 'cancel') {
@@ -327,8 +329,31 @@ ${nearestBin[0].distance}m away
 Size Limit: ${nearestBin[0].limit.length}mm x ${nearestBin[0].limit.width}mm`, Extra.markup(m => m.removeKeyboard()));
   ctx.replyWithLocation(nearestBin[0].location.latitude, nearestBin[0].location.longitude);
   ctx.webhookReply = true;
+  ctx.replyWithMarkdown('Has the information helped you to recycle e-waste?', Extra.markup(m => m.inlineKeyboard([[m.callbackButton('Yes','yes')], [m.callbackButton('No, but it will in the future.','no1')], [m.callbackButton('No','no2')]])));
   ctx.scene.leave();
 }
+bot.action('yes', (ctx)=> {
+  ctx.editMessageText("Thank you for your response!");
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
+  }
+  visitor.event('response', 'yes', `${ctx.chat.id}`).send();
+});
+
+bot.action('no1', (ctx)=> {
+  ctx.editMessageText("Thank you for your response!");
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
+  }
+  visitor.event('response', 'no1', `${ctx.chat.id}`).send();
+})
+
+bot.action('no2', (ctx)=> {
+  if (visitor == null) {
+    visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
+  }
+  visitor.event('response', 'no2', `${ctx.chat.id}`).send();
+})
 
 searchScene.on('text', (ctx) => {
   if (ctx.message.text.length === 6 && !isNaN(ctx.message.text)) {
