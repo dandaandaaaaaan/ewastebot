@@ -258,15 +258,19 @@ searchWithConstraintsScene.on('text', (ctx) => {
       url: apiCall,
       json: true,
     }, (error, response, body) => {
+      ctx.webhookReply = false;
+      if (body.results.length === 0) {
+        ctx.replyWithMarkdown(`Invalid postal code!
+Re-enter postal code, send your location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
+                  .keyboard([
+                    markup.locationRequestButton('Send location'),
+                  ]));
+        ctx.webhookReply = true;
+      }
       if (!error && response.statusCode === 200 && body.results.length > 0) {
         returnLocation = body;
-        searchWithConstraintsFunc(ctx, selectedItem, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
-      } else {
-        ctx.replyWithMarkdown(`Invalid postal code!
-Re-enter postal code, send location, or type "cancel" to exit`), Extra.markup(markup => markup.resize()
-          .keyboard([
-            markup.locationRequestButton('Send location'),
-          ]));
+        ctx.webhookReply = true;
+        searchSceneFunc(ctx, { latitude: returnLocation.results[0].LATITUDE, longitude: returnLocation.results[0].LONGITUDE });
       }
     })
   } else if (ctx.message.text.toLowerCase() === 'cancel') {
