@@ -134,6 +134,7 @@ visitor.event('action', 'recycle', `${ctx.chat.id}`).send();
 recycleScene.on('message', (ctx) => {
   const selectedItem = itemData
     .filter(item => item.name === ctx.update.message.text);
+    ctx.webhookReply = false;
   if (data === null) {
     ctx.reply('No data, check server');
     ctx.scene.leave();
@@ -145,6 +146,8 @@ recycleScene.on('message', (ctx) => {
     ctx.session.selectedItem = selectedItem;
     if (selectedItem[0].name === 'Alkaline Battery') {
       ctx.reply('Alkaline batteries in Singapore meet limits of mercury content, and thus they can be disposed together with general waste!', Extra.markup(m => m.removeKeyboard()));
+      ctx.replyWithMarkdown('Has the information helped you to recycle e-waste?', Extra.markup(m => m.inlineKeyboard([[m.callbackButton('Yes','yes')], [m.callbackButton('No, but it will in the future.','no1')], [m.callbackButton('No','no2')]])));
+      ctx.webhookReply = true;
       ctx.scene.leave();
     }
     // eslint-disable-next-line radix
@@ -172,9 +175,12 @@ SembWaste Pte Ltd
 Veolia ES Singapore Pte Ltd
 - Clementi-Bukit Merah sector: 6865 3140
     `, Extra.markup(m => m.removeKeyboard()));
+      ctx.replyWithMarkdown('Has the information helped you to recycle e-waste?', Extra.markup(m => m.inlineKeyboard([[m.callbackButton('Yes','yes')], [m.callbackButton('No, but it will in the future.','no1')], [m.callbackButton('No','no2')]])));
+      ctx.webhookReply = true;
       ctx.scene.leave();
     } else if (ctx.session.selectedItem !== null) {
       ctx.scene.leave();
+      ctx.webhookReply = true;
       ctx.scene.enter('searchWithConstraints');
     }
   }
@@ -183,8 +189,10 @@ Veolia ES Singapore Pte Ltd
 // Search for bin with constraints scene
 const searchWithConstraintsScene = new Scene('searchWithConstraints');
 
-searchWithConstraintsScene.enter(ctx => ctx.reply('Send your location or enter your postal code.', Extra.markup(markup => markup.resize()
-  .keyboard([
+searchWithConstraintsScene.enter(ctx => 
+  ctx.replyWithMarkdown(`Send your location or enter your postal code.
+
+_Anonymous Location data is collected for project purposes only. /faq for more details._`, Extra.markup(markup => markup.resize().keyboard([
     markup.locationRequestButton('Send location'),
   ]))));
 
@@ -296,10 +304,11 @@ searchWithConstraintsScene.on('location', (ctx) => {
 // Search Scene
 const searchScene = new Scene('search');
 searchScene.enter((ctx) => {
-  ctx.reply('Send your location or enter your postal code.', Extra.markup(markup => markup.resize()
-    .keyboard([
-      markup.locationRequestButton('Send location'),
-    ])));
+  ctx.replyWithMarkdown(`Send your location or enter your postal code.
+
+_Anonymous Location data is collected for project purposes only. /faq for more details._`, Extra.markup(markup => markup.resize().keyboard([
+    markup.locationRequestButton('Send location'),
+  ])));
   if (visitor == null) {
     visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
   }
@@ -350,6 +359,7 @@ bot.action('no1', (ctx)=> {
 })
 
 bot.action('no2', (ctx)=> {
+  ctx.editMessageText("Thank you for your response!");
   if (visitor == null) {
     visitor = ua(GOOGLE_ANALYTICS, `${ctx.chat.id}`, { strictCidFormat: false, cookie_domain: 'auto' });
   }
