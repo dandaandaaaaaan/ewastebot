@@ -1,22 +1,22 @@
 [
     {
         "name": "What is the purpose of this bot?",
-        "reply": "This bot was created as part of a project for the NUS Module, GEQ1917: Understanding and Critquing Sustainability. We hope to further promote and enhance e-waste recycling in Singapore"
+        "reply": "This bot was created as part of a project for the NUS Module, GEQ1917: Understanding and Critiquing Sustainability. We hope to promote and enhance the e-waste recycling process in Singapore, by making information more accessible."
     },
     {
         "name": "Is there any personal data that is being tracked upon using of this bot?",
-        "reply": "For the sake of data analysis for after the project, we are monitoring the total number of unique users for the bot as well as the locations that are sent to the bot. None of the locations are tied to your user information, and the only user info that is being tracked is the Telegram Chat ID to determine unique users, which does not contain any of your personal information. \n\nThe code for the bot is also fully open source, and can be found on https://github.com/dandaandaaaaaan/ewastebot"
+        "reply": "For the sake of data analysis for the project, we are monitoring the total number of unique users for the bot as well as anonymous location data. None of the locations are tied to your user information, and the only user info that is being tracked is the Telegram Chat ID to determine unique users, which does not contain any personal information.\n\nThe source code for the bot is also fully open source, and can be found on https://github.com/dandaandaaaaaan/ewastebot"
     },
     {
         "name": "Upon using the various e-waste bins, will the data in my e-waste be protected?",
-        "reply": "The individual e-waste recycling bin vendors are committed towards safe disposal of e-waste. They are only interested in the metals from the devices, not the data stored in them. For more information, use the /programmes command to learn more about the individual programmes. "
+        "reply": "The individual e-waste recycling bin vendors only want the metals from the recycled devices, and are committed towards safe disposal of e-waste, with all data destroyed. For more information, use the /programmes command to learn more about the individual programmes. "
     },
     {
         "name": "What should I prepare before recycling my e-waste?",
-        "reply": "In order to reduce the risk of short circuit or creation of fire hazards, do tape the ends of wires or rechargeable batteries before recycling!"
+        "reply": "In order to reduce the risk of short circuit or creation of fire hazards, do tape the ends of wires or rechargeable batteries before recycling."
     },
     {
         "name": "Where can I send feedback or report technical issues?",
-        "reply": "If you have any feedback for our project or wish to report any bugs, send an email to e0544308@u.nus.edu and we will be in touch!"
+        "reply": "Send an email to daniel.lee.mq@u.nus.edu and we will be in touch!"
     }
 ]
